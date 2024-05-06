@@ -1,4 +1,4 @@
-get_IGDB_access_token <- function(client_id, client_secret){
+get_IGDB_bearer_token <- function(client_id, client_secret){
   url <- paste0(
     "https://id.twitch.tv/oauth2/token?client_id=",
     client_id,
@@ -17,7 +17,7 @@ get_IGDB_genres <- function(client_id, bearer_token){
   res = POST(
     url = "https://api.igdb.com/v4/genres",
     add_headers(`Client-ID` = client_id, Authorization = bearer_token),
-    body = 'fields checksum,created_at,name,slug,updated_at,url;limit 500;'
+    body = 'fields *;limit 500;'
   )
   
   data = fromJSON(rawToChar(res$content))

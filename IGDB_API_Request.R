@@ -7,7 +7,7 @@ source("IGDB_API_Helpers.R")
 client_id = "9mw7zxuabb95gony5yx0598b7l0jn0"
 client_secret = "56a461dn6gjxfp9qpmnhmp00484sq0"
 
-bearer_token <- get_IGDB_access_token(client_id, client_secret)
+bearer_token <- get_IGDB_bearer_token(client_id, client_secret)
 
 genre_lookup <- get_IGDB_genres(client_id, bearer_token)
 
