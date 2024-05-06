@@ -28,3 +28,10 @@ clean_igdb_genres <- function(data, genre_lookup){
     unite("Genres", 'g1':paste0('g',max_genres), sep = ' | ', remove = FALSE, na.rm = TRUE) %>%
     return()
 }
+
+clean_igdb_platforms <- function(data, platforms_lookup){
+  max_platforms <- data %>% pull(platforms) %>% map(length) %>% unlist %>% max()
+  cols = paste0('p', 1:max_platforms)
+  
+  platforms_lookup %>% pull(abbreviation) -> look
+}

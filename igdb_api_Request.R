@@ -11,7 +11,7 @@ client_secret = "56a461dn6gjxfp9qpmnhmp00484sq0"
 bearer_token <- get_igdb_bearer_token(client_id, client_secret)
 
 genre_lookup <- get_igdb_genres(client_id, bearer_token) %>% select(id, genre = name)
-platform_lookup <- get_igdb_platform(client_id, bearer_token)
+platform_lookups <- get_igdb_platform(client_id, bearer_token)
 
 'fields *; search "Lego Star Wars: The Complete Saga"; where platforms = 20; limit 500;'
 
