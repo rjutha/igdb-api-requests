@@ -29,7 +29,9 @@ games_clean <-
     name, first_release_date,
     Platforms, involved_companies, Genres, summary
   )
-  
+games_clean %>% head(6)
+
+
 
 x <- get_igdb_involved_companies(client_id, bearer_token)
 y <- get_igdb_company(client_id, bearer_token)

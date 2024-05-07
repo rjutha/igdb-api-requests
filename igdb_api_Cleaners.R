@@ -44,3 +44,29 @@ clean_igdb_platforms <- function(data, platforms_lookup){
     unite("Platforms", 'p1':paste0('p',max_platforms), sep = ' | ', remove = FALSE, na.rm = TRUE) %>%
     return()
 }
+
+clean_igdb_involved_companies <- function(data){
+  
+  test <- data %>% pull(involved_companies) %>% unlist() %>% head(50)
+  test1 <- paste(test, collapse = ',')
+  body = paste0('fields *;where id = (', test1, ');limit 500;')
+  
+  get_igdb_involved_companies(client_id, bearer_token, body) -> ic_data
+  
+  test3 = ic_data %>% pull(company) %>% unique() %>% paste(collapse = ',')
+  body = paste0('fields *;where id = (', test3, ');limit 500;')
+  
+  get_igdb_company(client_id, bearer_token, body) -> company_lookup
+  # recode company -> group by game -> create porting publisher supporting columns
+  
+  company_lookup %>% pull(name) -> lookup
+  names(lookup) = company_lookup %>% pull(id)
+  
+  ic_data %>% mutate(company1 = recode(company, !!!lookup)) %>% select(id, company, company1, game, porting, publisher, developer, supporting) %>%
+    group_by(game) %>%
+    mutate(
+      publisher1 = case_when(
+        developer == TRUE paste()
+      )
+    )
+}
