@@ -33,5 +33,14 @@ clean_igdb_platforms <- function(data, platforms_lookup){
   max_platforms <- data %>% pull(platforms) %>% map(length) %>% unlist %>% max()
   cols = paste0('p', 1:max_platforms)
   
-  platforms_lookup %>% pull(abbreviation) -> look
+  platforms_lookup %>% pull(abbreviation) -> lookup
+  names(lookup) = platforms_lookup %>% pull(id)
+  
+  data %>%
+    mutate(platforms = platforms %>% str_replace_all('c|[:punct:]', "") %>% str_replace_all('[:space:]', 'xxx')) %>%
+    ungroup() %>%
+    separate(platforms, cols, sep = 'xxx') %>%
+    mutate(across('p1':paste0('p',max_platforms), recode, !!!lookup)) %>%
+    unite("Platforms", 'p1':paste0('p',max_platforms), sep = ' | ', remove = FALSE, na.rm = TRUE) %>%
+    return()
 }
