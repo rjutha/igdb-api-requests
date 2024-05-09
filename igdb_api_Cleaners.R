@@ -46,27 +46,61 @@ clean_igdb_platforms <- function(data, platforms_lookup){
 }
 
 clean_igdb_involved_companies <- function(data){
-  
+
   test <- data %>% pull(involved_companies) %>% unlist() %>% head(50)
   test1 <- paste(test, collapse = ',')
   body = paste0('fields *;where id = (', test1, ');limit 500;')
-  
+
   get_igdb_involved_companies(client_id, bearer_token, body) -> ic_data
-  
+
   test3 = ic_data %>% pull(company) %>% unique() %>% paste(collapse = ',')
   body = paste0('fields *;where id = (', test3, ');limit 500;')
-  
+
   get_igdb_company(client_id, bearer_token, body) -> company_lookup
   # recode company -> group by game -> create porting publisher supporting columns
-  
+
   company_lookup %>% pull(name) -> lookup
   names(lookup) = company_lookup %>% pull(id)
-  
-  ic_data %>% mutate(company1 = recode(company, !!!lookup)) %>% select(id, company, company1, game, porting, publisher, developer, supporting) %>%
+
+  publisher_lookup <- 
+    ic_data %>% 
+    mutate(company = recode(company, !!!lookup)) %>% 
+    select(company, game, publisher) %>%
+    filter(publisher == TRUE) %>%
     group_by(game) %>%
-    mutate(
-      publisher1 = case_when(
-        developer == TRUE paste()
-      )
-    )
+    summarise(publisher = paste0(company, collapse = ' | '))
+  
+  developer_lookup <- 
+    ic_data %>% 
+    mutate(company = recode(company, !!!lookup)) %>% 
+    select(company, game, developer) %>%
+    filter(developer == TRUE) %>%
+    group_by(game) %>%
+    summarise(developer = paste0(company, collapse = ' | ')) %>%
+    ungroup()
+  
+  supporting_lookup <- 
+    ic_data %>% 
+    mutate(company = recode(company, !!!lookup)) %>% 
+    select(company, game, supporting) %>%
+    filter(supporting == TRUE) %>%
+    group_by(game) %>%
+    summarise(supporting = paste0(company, collapse = ' | ')) %>%  
+    ungroup()
+  
+  porting_lookup <- 
+    ic_data %>% 
+    mutate(company = recode(company, !!!lookup)) %>% 
+    select(company, game, porting) %>%
+    filter(porting == TRUE) %>%
+    group_by(game) %>%
+    summarise(porting = paste0(company, collapse = ' | ')) %>%
+    ungroup()
+  
+  data %>% 
+    left_join(publisher_lookup, join_by(id == game)) %>%
+    left_join(developer_lookup, join_by(id == game)) %>%
+    left_join(supporting_lookup, join_by(id == game)) %>%
+    left_join(porting_lookup, join_by(id == game)) %>%
+    return()
 }

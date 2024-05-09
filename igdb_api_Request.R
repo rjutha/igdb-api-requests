@@ -1,3 +1,4 @@
+library(tidyverse)
 library(httr)
 library(jsonlite)
 library(tidyjson)
@@ -25,14 +26,12 @@ games_clean <-
   clean_igdb_first_release_date() %>%
   clean_igdb_genres(genres_lookup) %>%
   clean_igdb_platforms(platforms_lookup) %>%
+  clean_igdb_involved_companies() %>%
   select(
     name, first_release_date,
-    Platforms, involved_companies, Genres, summary
+    Platforms, involved_companies, Genres, summary,
+    developer, publisher, supporting, porting
   )
-games_clean %>% head(6)
+games_clean %>% head(6) -> x
 
-
-
-x <- get_igdb_involved_companies(client_id, bearer_token)
-y <- get_igdb_company(client_id, bearer_token)
-
+View(x)
